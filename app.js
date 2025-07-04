@@ -1,26 +1,26 @@
-// ゲーム設定
+// ゲーム設定 (Game Settings)
 const COLS = 10;
 const ROWS = 20;
 const BLOCK_SIZE = 30;
 
-// キャンバスとコンテキストの取得
+// キャンバスとコンテキストの取得 (Get Canvas and Context)
 const canvas = document.getElementById('game-board');
 const ctx = canvas.getContext('2d');
 const nextCanvas = document.getElementById('next-tetromino');
 const nextCtx = nextCanvas.getContext('2d');
 
-// スコアとボタンの要素
+// スコアとボタンの要素 (Score and Button Elements)
 const scoreElement = document.getElementById('score');
 const startButton = document.getElementById('start-button');
 
-// ゲームボードの初期化
+// ゲームボードの初期化 (Initialize Game Board)
 let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
 let score = 0;
 let gameOver = false;
 let gameInterval;
-let gameSpeed; // ← 追加: ゲーム速度を管理する変数
+let gameSpeed; // ゲーム速度を管理する変数 (Variable to manage game speed)
 
-// テトリミノの形と色
+// テトリミノの形と色 (Tetromino Shapes and Colors)
 const TETROMINOES = {
     'I': [[1, 1, 1, 1]],
     'J': [[1, 0, 0], [1, 1, 1]],
@@ -44,7 +44,7 @@ const COLORS = {
 let currentTetromino;
 let nextTetromino;
 
-// 新しいテトリミノを生成
+// 新しいテトリミノを生成 (Generate New Tetromino)
 function newTetromino() {
     const types = 'IJLOSTZ';
     const type = types[Math.floor(Math.random() * types.length)];
@@ -56,11 +56,10 @@ function newTetromino() {
     };
 }
 
-// 描画関数
+// 描画関数 (Draw Function)
 function draw() {
-    // ボードのクリア
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // 固定されたブロックの描画
+    // 固定されたブロックの描画 (Draw locked blocks)
     for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < COLS; col++) {
             if (board[row][col]) {
@@ -71,7 +70,7 @@ function draw() {
             }
         }
     }
-    // 現在のテトリミノの描画
+    // 現在のテトリミノの描画 (Draw current tetromino)
     if (currentTetromino) {
         ctx.fillStyle = currentTetromino.color;
         currentTetromino.shape.forEach((row, y) => {
@@ -86,7 +85,7 @@ function draw() {
     }
 }
 
-// 次のテトリミノを描画
+// 次のテトリミノを描画 (Draw Next Tetromino)
 function drawNext() {
     nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
     if (nextTetromino) {
@@ -103,7 +102,7 @@ function drawNext() {
     }
 }
 
-// 衝突判定
+// 衝突判定 (Collision Detection)
 function isCollision(tetromino, newRow, newCol) {
     for (let y = 0; y < tetromino.shape.length; y++) {
         for (let x = 0; x < tetromino.shape[y].length; x++) {
@@ -119,7 +118,7 @@ function isCollision(tetromino, newRow, newCol) {
     return false;
 }
 
-// テトリミノをボードに固定
+// テトリミノをボードに固定 (Lock Tetromino to Board)
 function lockTetromino() {
     currentTetromino.shape.forEach((row, y) => {
         row.forEach((value, x) => {
@@ -130,22 +129,17 @@ function lockTetromino() {
     });
 }
 
-// ← 追加: 速度を更新する関数
+// 速度を更新する関数 (Function to Update Speed)
 function updateSpeed() {
-    // 既存のインターバルをクリア
     clearInterval(gameInterval);
-    // 速度を上げる（間隔を短くする）
-    gameSpeed -= 25; // 1ラインごとに25ms速くする
-    // 速度の上限を設定 (速くなりすぎないように)
-    if (gameSpeed < 100) {
+    gameSpeed -= 25; // Speed up by 25ms per line clear
+    if (gameSpeed < 100) { // Set a max speed
         gameSpeed = 100;
     }
-    // 新しい速度でゲームループを再開
     gameInterval = setInterval(gameLoop, gameSpeed);
 }
 
-
-// ライン消去
+// ライン消去 (Clear Lines)
 function clearLines() {
     let linesCleared = 0;
     for (let row = ROWS - 1; row >= 0; row--) {
@@ -153,30 +147,29 @@ function clearLines() {
             linesCleared++;
             board.splice(row, 1);
             board.unshift(Array(COLS).fill(0));
-            row++; // 消したラインから再度チェック
+            row++; // Re-check the current row index
         }
     }
-    // スコア更新
     if (linesCleared > 0) {
         score += linesCleared * 100 * linesCleared;
         scoreElement.textContent = score;
-        updateSpeed(); // ← 変更: ラインを消したら速度を更新
+        updateSpeed(); // Update speed when lines are cleared
     }
 }
 
-// ゲームオーバー処理
+// ゲームオーバー処理 (Game Over Process)
 function checkGameOver() {
     if (isCollision(currentTetromino, currentTetromino.row, currentTetromino.col)) {
         gameOver = true;
         clearInterval(gameInterval);
-        alert('Game Over! スコア: ' + score);
+        alert('Game Over! スコア (Score): ' + score);
     }
 }
 
-// ゲームループ
+// ゲームループ (Game Loop)
 function gameLoop() {
     if (!gameOver) {
-        // 下に移動
+        // Move down
         if (!isCollision(currentTetromino, currentTetromino.row + 1, currentTetromino.col)) {
             currentTetromino.row++;
         } else {
@@ -191,7 +184,7 @@ function gameLoop() {
     }
 }
 
-// キー操作
+// キー操作 (Key Controls)
 document.addEventListener('keydown', (e) => {
     if (gameOver) return;
     switch (e.key) {
@@ -210,7 +203,7 @@ document.addEventListener('keydown', (e) => {
                 currentTetromino.row++;
             }
             break;
-        case 'ArrowUp': // 回転
+        case 'ArrowUp': // Rotate
             const shape = currentTetromino.shape;
             const newShape = shape[0].map((_, colIndex) => shape.map(row => row[colIndex]).reverse());
             const originalCol = currentTetromino.col;
@@ -221,12 +214,12 @@ document.addEventListener('keydown', (e) => {
             } else {
                 currentTetromino.col += offset;
                 if(isCollision({ ...currentTetromino, shape: newShape }, currentTetromino.row, currentTetromino.col)) {
-                   currentTetromino.col -= offset * 2;
-                   if(isCollision({ ...currentTetromino, shape: newShape }, currentTetromino.row, currentTetromino.col)) {
-                       currentTetromino.col = originalCol;
-                   } else {
-                       currentTetromino.shape = newShape;
-                   }
+                    currentTetromino.col -= offset * 2;
+                    if(isCollision({ ...currentTetromino, shape: newShape }, currentTetromino.row, currentTetromino.col)) {
+                        currentTetromino.col = originalCol;
+                    } else {
+                        currentTetromino.shape = newShape;
+                    }
                 } else {
                     currentTetromino.shape = newShape;
                 }
@@ -236,19 +229,18 @@ document.addEventListener('keydown', (e) => {
     draw();
 });
 
-
-// ゲーム開始
+// ゲーム開始 (Start Game)
 function startGame() {
     board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
     score = 0;
     scoreElement.textContent = score;
     gameOver = false;
-    gameSpeed = 1000; // ← 変更: 初期速度を設定
+    gameSpeed = 1000; // Set initial speed
     currentTetromino = newTetromino();
     nextTetromino = newTetromino();
     drawNext();
-    clearInterval(gameInterval); // ← 変更: 既存のインターバルをクリアしてから開始
-    gameInterval = setInterval(gameLoop, gameSpeed); // ← 変更: gameSpeed変数を使用
+    clearInterval(gameInterval); // Clear any existing interval before starting
+    gameInterval = setInterval(gameLoop, gameSpeed);
     startButton.textContent = "RESET";
 }
 
@@ -256,4 +248,10 @@ startButton.addEventListener('click', () => {
     startGame();
 });
 
-draw(); // 初期描画
+draw(); // Initial draw
+
+
+
+
+
+
