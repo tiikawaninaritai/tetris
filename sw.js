@@ -1,11 +1,11 @@
 const CACHE_NAME = 'tetris-pwa-cache-v1';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/script.js',
-    '/images/icon-192.png',
-    '/images/icon-512.png'
+    './',
+    './index.html',
+    './style.css',
+    './script.js',
+    './images/icon-192.png',
+    './images/icon-512.png'
 ];
 
 // Install event: cache all essential assets
